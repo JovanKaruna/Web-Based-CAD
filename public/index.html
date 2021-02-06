@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="main.js" defer></script>
+</head>
+<body>
+    <div>
+        <h1 class="title">WebGL</h1>
+        <div class="menu">
+            <input type="color" class="color">
+            <div>
+                <input type="radio" id="line" name="model" value="line">
+                <label for="line">Line</label><br>
+                <input type="radio" id="square" name="model" value="square">
+                <label for="square">Square</label><br>
+                <input type="radio" id="polygon" name="model" value="polygon">
+                <label for="polygon">Polygon</label>
+            </div>
+        </div>
+    </div>
+    <div class="canvas-placeholder">
+        <canvas id="main-canvas"></canvas>
+    </div>
+    <div class="center">
+        <button class="button" id="clear">Clear Canvas</button>
+        <button class="button" id="save">Save</button>
+        <button class="button" id="load">Load</button>
+    </div>
+</body>
+</html>

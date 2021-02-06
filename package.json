@@ -1,0 +1,22 @@
+{
+  "name": "web-based-cad",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JovanKaruna/Web-Based-CAD.git"
+  },
+  "author": "Jovan Karuna Cahyadi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JovanKaruna/Web-Based-CAD/issues"
+  },
+  "homepage": "https://github.com/JovanKaruna/Web-Based-CAD#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
