@@ -6,20 +6,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebGL</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="main.js" defer></script>
+    <script type="module" src="main.js" defer></script>
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 vPosition;
+        attribute vec4 vColor;
+        varying vec4 fColor;
+        void main()
+        {
+          gl_Position = vPosition;
+          fColor = vColor;
+        }
+    </script>
+  
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec4 fColor;
+        void main()
+        {
+          gl_FragColor = fColor;
+        }
+    </script>
 </head>
 <body>
     <div>
         <h1 class="title">WebGL</h1>
         <div class="menu">
-            <input type="color" class="color">
+            <input type="color" id="color" class="color">
             <div>
-                <input type="radio" id="line" name="model" value="line">
+                <input type="radio" id="line" name="model" value="line" checked>
                 <label for="line">Line</label><br>
                 <input type="radio" id="square" name="model" value="square">
                 <label for="square">Square</label><br>
                 <input type="radio" id="polygon" name="model" value="polygon">
                 <label for="polygon">Polygon</label>
+            </div>
+            <div>
+                <input type="checkbox" id="edit">
+                <label for="edit">Edit</label>
             </div>
         </div>
     </div>
