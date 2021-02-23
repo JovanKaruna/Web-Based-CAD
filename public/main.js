@@ -5,14 +5,12 @@ import { vec2 } from "./utils/utils.mjs";
 var canvas;
 var gl;
 
-var currPts = [];
-var points = [];
-var colors = [];
-
 var mouseClicked = false;
-var lineColor = [0, 0, 0];
-var temp_start;
-var temp_end;
+var color = [0, 0, 0];
+var lines = [];
+var linesColor = [];
+var tempLineStart = [];
+var tempLineEnd = [];
 
 var bufferId;
 var cbufferId;
@@ -57,22 +55,21 @@ const init = () => {
 //Function to clear canvas
 const clearCanvas = () => {
   document.getElementById("clear").addEventListener("click", () => {
-    points = [];
-    currPts = [];
-    colors = [];
+    lines = [];
+    linesColor = [];
     render();
   });
 };
 
 //Function to change color
 const changeColor = () => {
-  var color = document.getElementById("color");
-  color.addEventListener("change", () => {
-    const colorValue = color.value;
-    lineColor = [
+  var inputColor = document.getElementById("color");
+  inputColor.addEventListener("change", () => {
+    const colorValue = inputColor.value;
+    color = [
       parseInt(colorValue.slice(1, 3), 16) / 255,
       parseInt(colorValue.slice(3, 5), 16) / 255,
-      parseInt(colorValue.slice(5, 7)) / 255,
+      parseInt(colorValue.slice(5, 7), 16) / 255,
     ];
   });
 };
@@ -89,11 +86,25 @@ const eventListener = () => {
       for (var i = 0; i < radio.length; i++) {
         if (radio[i].type == "radio" && radio[i].checked) {
           if (radio[i].value == "line") {
-            temp_end = [offsetX, offsetY];
+            if (edit) {
+              // editting model
+              console.log("edit");
+            } else {
+              //make model
+              tempLineEnd = [offsetX, offsetY];
+            }
           } else if (radio[i].value == "square") {
-            console.log("square");
+            if (edit) {
+              console.log("edit");
+            } else {
+              console.log("square");
+            }
           } else if (radio[i].value == "polygon") {
-            console.log("square");
+            if (edit) {
+              console.log("edit");
+            } else {
+              console.log("polygon");
+            }
           }
         }
       }
@@ -111,12 +122,26 @@ const eventListener = () => {
     for (var i = 0; i < radio.length; i++) {
       if (radio[i].type == "radio" && radio[i].checked) {
         if (radio[i].value == "line") {
-          temp_start = [offsetX, offsetY];
-          temp_end = [offsetX, offsetY];
+          if (edit) {
+            // editting model
+            console.log("edit");
+          } else {
+            //make model
+            tempLineStart = [offsetX, offsetY];
+            tempLineEnd = [offsetX, offsetY];
+          }
         } else if (radio[i].value == "square") {
-          console.log("square");
+          if (edit) {
+            console.log("edit");
+          } else {
+            console.log("square");
+          }
         } else if (radio[i].value == "polygon") {
-          console.log("square");
+          if (edit) {
+            console.log("edit");
+          } else {
+            console.log("polygon");
+          }
         }
       }
     }
@@ -133,19 +158,34 @@ const eventListener = () => {
     for (var i = 0; i < radio.length; i++) {
       if (radio[i].type == "radio" && radio[i].checked) {
         if (radio[i].value == "line") {
-          currPts.push(temp_start, temp_end);
-          temp_start = [];
-          temp_end = [];
+          if (edit) {
+            // editting model
+            console.log("edit");
+          } else {
+            //make model
+            lines.push(createLine(tempLineStart, tempLineEnd));
+            for (var i = 0; i < 2; ++i) {
+              linesColor.push([color[0], color[1], color[2]]);
+            }
+            tempLineStart = [];
+            tempLineEnd = [];
+          }
         } else if (radio[i].value == "square") {
-          console.log("square");
+          if (edit) {
+            console.log("edit");
+          } else {
+            console.log("square");
+          }
         } else if (radio[i].value == "polygon") {
-          console.log("square");
+          if (edit) {
+            console.log("edit");
+          } else {
+            console.log("polygon");
+          }
         }
       }
     }
     render();
-
-    currPts = [];
   });
 
   changeColor();
@@ -155,29 +195,48 @@ const eventListener = () => {
   render();
 };
 
+//Line
 const createLine = (start, end) => {
   return [start[0], start[1], end[0], end[1]];
 };
 
-const render = () => {
-  // var renderedLine = [];
-  
+const renderLine = () => {
   gl.clear(gl.COLOR_BUFFER_BIT);
-  if (currPts.length == 2) {
-    var tempPts = createLine(currPts[0], currPts[1]);
-    points.push(tempPts[0], tempPts[1], tempPts[2], tempPts[3]);
+
+  var linesRender = [];
+  var linesColorRender = [];
+
+  lines.forEach((line) => {
+    line.forEach((point) => linesRender.push(point));
+  });
+
+  linesColor.forEach((colors) => {
+    colors.forEach((dec) => {
+      linesColorRender.push(dec);
+    });
+  });
+
+  if (tempLineEnd.length != 0) {
+    createLine(tempLineStart, tempLineEnd).forEach((point) =>
+      linesRender.push(point)
+    );
     for (var i = 0; i < 2; ++i) {
-      colors.push(lineColor[0], lineColor[1], lineColor[2]);
+      linesColorRender.push(color[0], color[1], color[2]);
     }
-    currPts.shift();
   }
-  gl.bindBuffer(gl.ARRAY_BUFFER, cbufferId);
-  gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(colors));
+
   gl.bindBuffer(gl.ARRAY_BUFFER, bufferId);
-  gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(points));
-  for (var i = 0; i < points.length / 4; i++) {
+  gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(linesRender));
+  gl.bindBuffer(gl.ARRAY_BUFFER, cbufferId);
+  gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(linesColorRender));
+  for (var i = 0; i < linesRender.length / 4; i++) {
     gl.drawArrays(gl.LINES, 2 * i, 2);
   }
+};
+
+//Render all models
+const render = () => {
+  renderLine();
 };
 
 window.onload = init;
