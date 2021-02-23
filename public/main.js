@@ -124,7 +124,9 @@ const eventListener = () => {
             }
           } else if (radio[i].value == "square") {
             if (edit) {
-              console.log("edit");
+              if(squareEdit.length > 0) {
+                squares[squareEdit[1]] = createSquare(squareEdit[0], [offsetX, offsetY]);
+              }
             } else {
               tempSquareEnd = [offsetX, offsetY];
             }
@@ -161,7 +163,7 @@ const eventListener = () => {
           }
         } else if (radio[i].value == "square") {
           if (edit) {
-            console.log("edit");
+            getPointSquares(offsetX, offsetY);
           } else {
             tempSquareStart = [offsetX, offsetY];
             tempSquareEnd = [offsetX, offsetY];
@@ -202,7 +204,7 @@ const eventListener = () => {
           }
         } else if (radio[i].value == "square") {
           if (edit) {
-            console.log("edit");
+            squareEdit = [];
           } else {
             squares.push(createSquare(tempSquareStart, tempSquareEnd));
             for (var i = 0; i < 4; ++i) {
@@ -289,7 +291,21 @@ const renderLine = () => {
 };
 
 /*** SQUARES ***/
-function createSquare(start, end) {
+const getPointSquares = (x, y) => {
+  for (let i = 0; i < squares.length; i++) {
+    for (let j = 0; j < squares[i].length; j++) {
+      if (euclidean(x, y, squares[i][j][0], squares[i][j][1]) < 0.02) {
+        if (j > 1) {
+          squareEdit = [squares[i][j-2], i]
+        } else {
+          squareEdit = [squares[i][j+2], i]
+        }
+      }
+    }
+  }
+};
+
+const createSquare = (start, end) => {
   var x1 = start[0];
   var y1 = start[1];
   var x2 = end[0];
@@ -315,7 +331,8 @@ function createSquare(start, end) {
     [x1 + delta_x, y1 + delta_y],
     [x1, y1 + delta_y],
   ];
-}
+};
+
 const renderSquare = () => {
   var squaresRender = [];
   var squaresColorRender = [];
