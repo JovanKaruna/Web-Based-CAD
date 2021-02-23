@@ -15,6 +15,12 @@ var lineEdit = [];
 var tempLineStart = [];
 var tempLineEnd = [];
 
+var squares = [];
+var squaresColor = [];
+var squareEdit = [];
+var tempSquareStart = [];
+var tempSquareEnd = [];
+
 var bufferId;
 var cbufferId;
 
@@ -62,6 +68,12 @@ const clearAll = () => {
   lineEdit = [];
   tempLineStart = [];
   tempLineEnd = [];
+
+  squares = [];
+  squaresColor = [];
+  squareEdit = [];
+  tempSquareStart = [];
+  tempSquareEnd = [];
 };
 
 //Function to change color
@@ -114,7 +126,7 @@ const eventListener = () => {
             if (edit) {
               console.log("edit");
             } else {
-              console.log("square");
+              tempSquareEnd = [offsetX, offsetY];
             }
           } else if (radio[i].value == "polygon") {
             if (edit) {
@@ -151,7 +163,8 @@ const eventListener = () => {
           if (edit) {
             console.log("edit");
           } else {
-            console.log("square");
+            tempSquareStart = [offsetX, offsetY];
+            tempSquareEnd = [offsetX, offsetY];
           }
         } else if (radio[i].value == "polygon") {
           if (edit) {
@@ -191,7 +204,12 @@ const eventListener = () => {
           if (edit) {
             console.log("edit");
           } else {
-            console.log("square");
+            squares.push(createSquare(tempSquareStart, tempSquareEnd));
+            for (var i = 0; i < 4; ++i) {
+              squaresColor.push([color[0], color[1], color[2]]);
+            }
+            tempSquareStart = [];
+            tempSquareEnd = [];
           }
         } else if (radio[i].value == "polygon") {
           if (edit) {
@@ -240,8 +258,6 @@ const createLine = (start, end) => {
 };
 
 const renderLine = () => {
-  gl.clear(gl.COLOR_BUFFER_BIT);
-
   var linesRender = [];
   var linesColorRender = [];
 
@@ -272,9 +288,71 @@ const renderLine = () => {
   }
 };
 
+/*** SQUARES ***/
+function createSquare(start, end) {
+  var x1 = start[0];
+  var y1 = start[1];
+  var x2 = end[0];
+  var y2 = end[1];
+
+  var length = x1 - x2;
+  var width = y1 - y2;
+  var delta = Math.min(Math.abs(length), Math.abs(width));
+  var delta_x = delta;
+  var delta_y = delta;
+
+  if (length > 0) {
+    delta_x *= -1;
+  }
+
+  if (width > 0) {
+    delta_y *= -1;
+  }
+
+  return [
+    [x1, y1],
+    [x1 + delta_x, y1],
+    [x1 + delta_x, y1 + delta_y],
+    [x1, y1 + delta_y],
+  ];
+}
+const renderSquare = () => {
+  var squaresRender = [];
+  var squaresColorRender = [];
+
+  squares.forEach((square) => {
+    square.forEach((point) => squaresRender.push(point));
+  });
+
+  squaresColor.forEach((colors) => {
+    colors.forEach((dec) => {
+      squaresColorRender.push(dec);
+    });
+  });
+
+  if (tempSquareEnd.length != 0) {
+    createSquare(tempSquareStart, tempSquareEnd).forEach((point) =>
+      squaresRender.push(point)
+    );
+    for (var i = 0; i < 4; ++i) {
+      squaresColorRender.push(color[0], color[1], color[2]);
+    }
+  }
+  gl.bindBuffer(gl.ARRAY_BUFFER, bufferId);
+  gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(squaresRender));
+  gl.bindBuffer(gl.ARRAY_BUFFER, cbufferId);
+  gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(squaresColorRender));
+  for (var i = 0; i < squaresRender.length / 4; i++) {
+    gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  }
+};
+
 //Render all models
 const render = () => {
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
   renderLine();
+  renderSquare();
 };
 
 window.onload = init;
