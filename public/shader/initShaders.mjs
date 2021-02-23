@@ -1,61 +1,36 @@
-const initShaders = (gl, vertexShaderId, fragmentShaderId) => {
-  var vertShdr;
-  var fragShdr;
+const initShaders = (gl, vertexId, fragmentId) => {
+  var vertElement = document.getElementById(vertexId).innerHTML;
+  var fragElement = document.getElementById(fragmentId).innerHTML;
 
-  var vertElem = document.getElementById(vertexShaderId);
-  if (!vertElem) {
-    alert("Unable to load vertex shader " + vertexShaderId);
-    return -1;
-  } else {
-    vertShdr = gl.createShader(gl.VERTEX_SHADER);
-    gl.shaderSource(vertShdr, vertElem.text);
-    gl.compileShader(vertShdr);
-    if (!gl.getShaderParameter(vertShdr, gl.COMPILE_STATUS)) {
-      var msg =
-        "Vertex shader failed to compile.  The error log is:" +
-        "<pre>" +
-        gl.getShaderInfoLog(vertShdr) +
-        "</pre>";
-      alert(msg);
-      return -1;
-    }
-  }
+  //make vertex and fragment shader
+  var vertShader = compileCreateShader(gl, vertElement, gl.VERTEX_SHADER);
+  var fragShader = compileCreateShader(gl, fragElement, gl.FRAGMENT_SHADER);
 
-  var fragElem = document.getElementById(fragmentShaderId);
-  if (!fragElem) {
-    alert("Unable to load vertex shader " + fragmentShaderId);
-    return -1;
-  } else {
-    fragShdr = gl.createShader(gl.FRAGMENT_SHADER);
-    gl.shaderSource(fragShdr, fragElem.text);
-    gl.compileShader(fragShdr);
-    if (!gl.getShaderParameter(fragShdr, gl.COMPILE_STATUS)) {
-      var msg =
-        "Fragment shader failed to compile.  The error log is:" +
-        "<pre>" +
-        gl.getShaderInfoLog(fragShdr) +
-        "</pre>";
-      alert(msg);
-      return -1;
-    }
-  }
-
+  //make program
   var program = gl.createProgram();
-  gl.attachShader(program, vertShdr);
-  gl.attachShader(program, fragShdr);
+
+  //attach and link
+  gl.attachShader(program, vertShader);
+  gl.attachShader(program, fragShader);
   gl.linkProgram(program);
 
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    var msg =
-      "Shader program failed to link.  The error log is:" +
-      "<pre>" +
-      gl.getProgramInfoLog(program) +
-      "</pre>";
-    alert(msg);
+    alert("Shader program failed to link. " + gl.getProgramInfoLog(program));
     return -1;
   }
 
   return program;
+};
+
+const compileCreateShader = (gl, id, shaderType) => {
+  var shader = gl.createShader(shaderType);
+  gl.shaderSource(shader, id);
+  gl.compileShader(shader);
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    alert("Failed to compile " + gl.getShaderInfoLog(shader));
+    return;
+  }
+  return shader;
 };
 
 export default initShaders;

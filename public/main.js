@@ -1,6 +1,5 @@
 import initShaders from "./shader/initShaders.mjs";
-import { flatten, euclidean } from "./utils/functions.mjs";
-import { vec2 } from "./utils/utils.mjs";
+import { flatten, euclidean } from "./utils/utils.mjs";
 
 var canvas;
 var gl;
