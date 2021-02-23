@@ -1,5 +1,5 @@
 import initShaders from "./shader/initShaders.mjs";
-import { flatten } from "./utils/functions.mjs";
+import { flatten, euclidean } from "./utils/functions.mjs";
 import { vec2 } from "./utils/utils.mjs";
 
 var canvas;
@@ -7,8 +7,11 @@ var gl;
 
 var mouseClicked = false;
 var color = [0, 0, 0];
+
+//LINE
 var lines = [];
 var linesColor = [];
+var lineEdit = [];
 var tempLineStart = [];
 var tempLineEnd = [];
 
@@ -52,13 +55,13 @@ const init = () => {
   eventListener();
 };
 
-//Function to clear canvas
-const clearCanvas = () => {
-  document.getElementById("clear").addEventListener("click", () => {
-    lines = [];
-    linesColor = [];
-    render();
-  });
+//Function for clear canvas
+const clearAll = () => {
+  lines = [];
+  linesColor = [];
+  lineEdit = [];
+  tempLineStart = [];
+  tempLineEnd = [];
 };
 
 //Function to change color
@@ -88,7 +91,21 @@ const eventListener = () => {
           if (radio[i].value == "line") {
             if (edit) {
               // editting model
-              console.log("edit");
+              if (lineEdit.length > 0) {
+                if (lineEdit[5] == 1) {
+                  //x1 and y1 changed
+                  lines[lineEdit[4]] = createLine(
+                    [offsetX, offsetY],
+                    [lineEdit[2], lineEdit[3]]
+                  );
+                } else if (lineEdit[5] == 2) {
+                  //x2 and y2 change
+                  lines[lineEdit[4]] = createLine(
+                    [lineEdit[0], lineEdit[1]],
+                    [offsetX, offsetY]
+                  );
+                }
+              }
             } else {
               //make model
               tempLineEnd = [offsetX, offsetY];
@@ -124,7 +141,7 @@ const eventListener = () => {
         if (radio[i].value == "line") {
           if (edit) {
             // editting model
-            console.log("edit");
+            getPointLines(offsetX, offsetY);
           } else {
             //make model
             tempLineStart = [offsetX, offsetY];
@@ -160,7 +177,7 @@ const eventListener = () => {
         if (radio[i].value == "line") {
           if (edit) {
             // editting model
-            console.log("edit");
+            lineEdit = [];
           } else {
             //make model
             lines.push(createLine(tempLineStart, tempLineEnd));
@@ -190,12 +207,34 @@ const eventListener = () => {
 
   changeColor();
 
-  clearCanvas();
+  document.getElementById("clear").addEventListener("click", () => {
+    clearAll();
+    render();
+  });
 
   render();
 };
 
-//Line
+/*** LINE MODEL ***/
+const getPointLines = (x, y) => {
+  for (let i = 0; i < lines.length; i++) {
+    for (let j = 0; j < lines[i].length; j += 2) {
+      if (euclidean(x, y, lines[i][j], lines[i][j + 1]) < 0.02) {
+        var x1 = lines[i][0];
+        var y1 = lines[i][1];
+        var x2 = lines[i][2];
+        var y2 = lines[i][3];
+
+        if (j < 2) {
+          lineEdit = [x1, y1, x2, y2, i, 1];
+        } else {
+          lineEdit = [x1, y1, x2, y2, i, 2];
+        }
+      }
+    }
+  }
+};
+
 const createLine = (start, end) => {
   return [start[0], start[1], end[0], end[1]];
 };
@@ -224,7 +263,6 @@ const renderLine = () => {
       linesColorRender.push(color[0], color[1], color[2]);
     }
   }
-
   gl.bindBuffer(gl.ARRAY_BUFFER, bufferId);
   gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(linesRender));
   gl.bindBuffer(gl.ARRAY_BUFFER, cbufferId);
