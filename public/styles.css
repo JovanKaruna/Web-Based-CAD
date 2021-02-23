@@ -14,11 +14,6 @@
   background-color: var(--gray-color);
 }
 
-canvas {
-  background-color: var(--white-color);
-  width: 100%;
-}
-
 .title{
   text-align: center;
 }
@@ -43,9 +38,8 @@ input[type="color"] {
 }
 
 .canvas-placeholder{
-  width: 70%;
-  margin: auto;
-  margin-top: 10px;
+  width: 600;
+  height: 600;
 }
 
 .center {
@@ -53,6 +47,12 @@ input[type="color"] {
   margin: auto;
   display: flex;
   justify-content: space-between;
+}
+
+.centers {
+  margin: auto;
+  width: 40%;
+  margin-top: 10px;
 }
 
 .button {
