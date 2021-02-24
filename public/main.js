@@ -23,15 +23,17 @@ var squareEdit = [];
 var tempSquareStart = [];
 var tempSquareEnd = [];
 
+//POLYGON
 var polygons = [];
 var polygonsColor = [];
 var polygonEdit = [];
-var tempPolygonStart = [];
-var tempPolygonEnd = [];
+var tempPolygon = [];
+var startMakePolygon = false;
 
 var bufferId;
 var cbufferId;
-var currentPolygonId = 0;
+
+const clickTreshold = 0.02;
 
 const maxPoints = 200000;
 
@@ -87,8 +89,8 @@ const clearAll = () => {
   polygons = [];
   polygonsColor = [];
   polygonEdit = [];
-  tempPolygonStart = [];
-  tempPolygonEnd = [];
+  tempPolygon = [];
+  startMakePolygon = false;
 };
 
 //Function to change color
@@ -106,28 +108,8 @@ const changeColor = () => {
 
 //All Event listener
 const eventListener = () => {
-  canvas.addEventListener("dblclick", (e) => {
-    console.log("Double Click");
-    
-    var offsetX = -1 + (2 * e.offsetX) / canvas.width;
-    var offsetY = -1 + (2 * (canvas.height - e.offsetY)) / canvas.height;
-    var radio = document.getElementsByTagName("input");
-    var edit = document.getElementById("edit").checked;
-
-    for (var i = 0; i < radio.length; i++) {
-      if (radio[i].type == "radio" && radio[i].checked) {
-        if (radio[i].value == "polygon") {
-            polygons[currentPolygonId].push(offsetX);
-            polygons[currentPolygonId].push(offsetY);
-            currentPolygonId++;
-          }
-        }
-      }
-    });
-
   canvas.addEventListener("mousemove", (e) => {
     if (mouseClicked == true) {
-      console.log("Moved");
       var offsetX = -1 + (2 * e.offsetX) / canvas.width;
       var offsetY = -1 + (2 * (canvas.height - e.offsetY)) / canvas.height;
       var radio = document.getElementsByTagName("input");
@@ -141,29 +123,21 @@ const eventListener = () => {
               if (lineEdit.length > 0) {
                 if (lineEdit[5] == 1) {
                   //x1 and y1 changed
-                  console.log(`lineEdit: ${lineEdit}`)
                   lines[lineEdit[4]] = createLine(
                     [offsetX, offsetY],
                     [lineEdit[2], lineEdit[3]]
                   );
-                  console.log(`lines: ${lines}`)
                 } else if (lineEdit[5] == 2) {
                   //x2 and y2 change
-                  console.log(`lineEdit: ${lineEdit}`)
                   lines[lineEdit[4]] = createLine(
                     [lineEdit[0], lineEdit[1]],
                     [offsetX, offsetY]
                   );
-                  console.log(`lines: ${lines}`)
                 }
               }
             } else {
               //make model
-              console.log(`lineEdit: ${lineEdit}`)
               tempLineEnd = [offsetX, offsetY];
-              console.log(`tempLineEnd: ${tempLineStart}`)
-              console.log(`tempLineStart: ${tempLineEnd}`)
-              
             }
           } else if (radio[i].value == "square") {
             if (edit) {
@@ -176,37 +150,11 @@ const eventListener = () => {
             } else {
               tempSquareEnd = [offsetX, offsetY];
             }
-          } 
-          else if (radio[i].value == "polygon") {
-            // mouseClicked = false;
-            tempPolygonEnd = [offsetX, offsetY];
-            console.log("IKEH");
+          } else if (radio[i].value == "polygon") {
+            if (edit) {
+              polygons[polygonEdit[1]][polygonEdit[2]] = [offsetX, offsetY];
+            }
           }
-          //   if (polygonEdit.length > 0) {
-          //     if (polygonEdit[5] == 1) {
-          //       //x1 and y1 changed
-          //       console.log(`polygonEdit: ${lineEdit}`)
-          //       polygons[polygonEdit[4]] = createLine(
-          //         [offsetX, offsetY],
-          //         [polygonEdit[2], polygonEdit[3]]
-          //       );
-          //     } else if (polygonEdit[5] == 2) {
-          //       //x2 and y2 change
-          //       console.log(`polygonEdit: ${lineEdit}`)
-          //       polygons[polygonEdit[4]] = createLine(
-          //         [polygonEdit[0], polygonEdit[1]],
-          //         [offsetX, offsetY]
-          //       );
-          //     }
-          //   }
-          // } else {
-          //   //make model
-          //   console.log(`polygonEdit: ${polygonEdit}`)
-          //   tempPolygonEnd = [offsetX, offsetY];
-          //   console.log(`tempPolygonEnd: ${tempPolygonStart}`)
-          //   console.log(`tempPolygonStart: ${tempPolygonEnd}`)
-            
-          // }
         }
       }
       render();
@@ -215,11 +163,11 @@ const eventListener = () => {
 
   canvas.addEventListener("mousedown", (e) => {
     mouseClicked = true;
-    console.log("Mouse Down");
     var offsetX = -1 + (2 * e.offsetX) / canvas.width;
     var offsetY = -1 + (2 * (canvas.height - e.offsetY)) / canvas.height;
     var radio = document.getElementsByTagName("input");
     var edit = document.getElementById("edit").checked;
+    var message = document.getElementById("message");
 
     for (var i = 0; i < radio.length; i++) {
       if (radio[i].type == "radio" && radio[i].checked) {
@@ -241,14 +189,34 @@ const eventListener = () => {
           }
         } else if (radio[i].value == "polygon") {
           if (edit) {
-            // getPointPolygon(offsetX, offsetY);
-            console.log("polygon")
+            getPointPolygon(offsetX, offsetY);
           } else {
-            tempPolygonStart = [offsetX, offsetY];
-            tempPolygonEnd = [offsetX, offsetY];
-            console.log("masuk sini")
-            console.log(`Start: ${tempPolygonStart}`)
-            console.log(`End: ${tempPolygonEnd}`)
+            if (startMakePolygon) {
+              if (
+                euclidean(
+                  offsetX,
+                  offsetY,
+                  tempPolygon[tempPolygon.length - 1][0],
+                  tempPolygon[tempPolygon.length - 1][1]
+                ) < clickTreshold
+              ) {
+                startMakePolygon = false;
+                polygons.push(tempPolygon);
+                for (var i = 0; i < tempPolygon.length; ++i) {
+                  polygonsColor.push([color[0], color[1], color[2]]);
+                }
+                message.innerHTML =
+                  "Done making a polygon. You can start make a new polygon.";
+                tempPolygon = [];
+              } else {
+                tempPolygon.push([offsetX, offsetY]);
+              }
+            } else {
+              startMakePolygon = true;
+              message.innerHTML =
+                "Currently making a polygon. Click the last point you make to stop making the current polygon.";
+              tempPolygon.push([offsetX, offsetY]);
+            }
           }
         }
       }
@@ -256,14 +224,10 @@ const eventListener = () => {
     render();
   });
 
-  canvas.addEventListener("mouseup", (e) => {
-    console.log("Mouse Up")
+  canvas.addEventListener("mouseup", () => {
     mouseClicked = false;
-    var offsetX = -1 + (2 * e.offsetX) / canvas.width;
-    var offsetY = -1 + (2 * (canvas.height - e.offsetY)) / canvas.height;
     var radio = document.getElementsByTagName("input");
     var edit = document.getElementById("edit").checked;
-    console.log(radio)
 
     for (var i = 0; i < radio.length; i++) {
       if (radio[i].type == "radio" && radio[i].checked) {
@@ -274,7 +238,6 @@ const eventListener = () => {
           } else {
             //make model
             lines.push(createLine(tempLineStart, tempLineEnd));
-            console.log(lines)
             for (var i = 0; i < 2; ++i) {
               linesColor.push([color[0], color[1], color[2]]);
             }
@@ -293,40 +256,14 @@ const eventListener = () => {
             tempSquareEnd = [];
           }
         } else if (radio[i].value == "polygon") {
-            if (edit) {
-              // editting model
-              polygonEdit = [];
-            } else {
-              //make model
-              //first point of polygon
-              // console.log("Polygon 1")
-              if (polygons.length == 0 || (polygons.length == currentPolygonId)){
-                // console.log(polygons)
-                // console.log("Polygon 2")
-                // console.log(createPolygon(tempPolygonStart, tempPolygonEnd));
-                polygons.push(createPolygon(tempPolygonStart, tempPolygonEnd));
-                // console.log(polygons)
-              }
-              else if (polygons.length != 0){
-                console.log("Polygon 3")
-                // console.log(polygons)
-                polygons[currentPolygonId].push(tempPolygonEnd[0]);
-                polygons[currentPolygonId].push(tempPolygonEnd[1]);
-              }
-              // for (var i = 0; i <  polygonSumVertices[]; ++i) {
-              //   polygonsColor.push([color[0], color[1], color[2]]);
-              // }
-              tempPolygonStart = [];
-              tempPolygonEnd = [];
-            }
-          } else {
-            console.log("No Input");
+          if (edit) {
+            polygonEdit = [];
           }
-    render();
         }
       }
+    }
+    render();
   });
-  
 
   changeColor();
 
@@ -341,7 +278,7 @@ const eventListener = () => {
 
   document.getElementById("load").addEventListener("change", () => {
     const selectedFile = document.getElementById("load").files[0];
-    document.getElementById("load").value = ''; //reset file in load
+    document.getElementById("load").value = ""; //reset file in load
     if (selectedFile) {
       var reader = new FileReader();
       reader.onload = function () {
@@ -369,7 +306,7 @@ const eventListener = () => {
 const getPointLines = (x, y) => {
   for (let i = 0; i < lines.length; i++) {
     for (let j = 0; j < lines[i].length; j += 2) {
-      if (euclidean(x, y, lines[i][j], lines[i][j + 1]) < 0.02) {
+      if (euclidean(x, y, lines[i][j], lines[i][j + 1]) < clickTreshold) {
         var x1 = lines[i][0];
         var y1 = lines[i][1];
         var x2 = lines[i][2];
@@ -415,7 +352,6 @@ const renderLine = () => {
   gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(linesRender));
   gl.bindBuffer(gl.ARRAY_BUFFER, cbufferId);
   gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(linesColorRender));
-  // console.log(linesColorRender.length)
   for (var i = 0; i < linesRender.length / 4; i++) {
     gl.drawArrays(gl.LINES, 2 * i, 2);
   }
@@ -425,7 +361,7 @@ const renderLine = () => {
 const getPointSquares = (x, y) => {
   for (let i = 0; i < squares.length; i++) {
     for (let j = 0; j < squares[i].length; j++) {
-      if (euclidean(x, y, squares[i][j][0], squares[i][j][1]) < 0.02) {
+      if (euclidean(x, y, squares[i][j][0], squares[i][j][1]) < clickTreshold) {
         if (j > 1) {
           squareEdit = [squares[i][j - 2], i];
         } else {
@@ -490,56 +426,32 @@ const renderSquare = () => {
   gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(squaresRender));
   gl.bindBuffer(gl.ARRAY_BUFFER, cbufferId);
   gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(squaresColorRender));
-  
   for (var i = 0; i < squaresRender.length / 4; i++) {
     gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
   }
 };
 
 /*** POLYGON ***/
-// const getPointPolygon = (x, y) => {
-//   for (let i = 0; i < polygons.length; i++) {
-//     for (let j = 0; j < polygons[i].length; j++) {
-//       if (euclidean(x, y, polygons[i][j], polygons[i][j + 1]) < 0.02) {
-//         var x1 = polygons[i][0];
-//         var y1 = polygons[i][1];
-//         var x2 = polygons[i][2];
-//         var y2 = polygons[i][3];
-
-//         // if (j < 2) {
-//         //   polygonEdit = [x1, y1, x2, y2, i, 1];
-//         // } else {
-//         //   polygonEdit = [x1, y1, x2, y2, i, 2];
-//         // }
-//       }
-//     }
-//   }
-// };
-
-const createPolygon = (start, end) => {
-  return [start[0], start[1], end[0], end[1]];
+const getPointPolygon = (x, y) => {
+  for (let i = 0; i < polygons.length; i++) {
+    for (let j = 0; j < polygons[i].length; j++) {
+      if (
+        euclidean(x, y, polygons[i][j][0], polygons[i][j][1]) < clickTreshold
+      ) {
+        polygonEdit = [polygons[i][j], i, j];
+      }
+    }
+  }
 };
 
 const renderPolygon = () => {
   var polygonsRender = [];
   var polygonsColorRender = [];
   var polygonSumVertices = [];
-  var tempi = 0;
-  var tempj = 0;
-  var polygonsColor = [];
 
-  polygons.forEach((polygon) => 
-  {
+  polygons.forEach((polygon) => {
     polygon.forEach((point) => polygonsRender.push(point));
     polygonSumVertices.push(polygon.length);
-  });
-
-
-  polygonSumVertices.forEach((sum) => 
-  {
-    for (var i = 0; i < sum; ++i) {
-        polygonsColor.push([color[0], color[1], color[2]]);
-    }
   });
 
   polygonsColor.forEach((colors) => {
@@ -548,34 +460,35 @@ const renderPolygon = () => {
     });
   });
 
-
-  // if (tempPolygonEnd.length != 0) {
-  //   createPolygon(tempPolygonStart, tempPolygonEnd).forEach((point) =>
-  //     polygonsRender.push(point)
-  //   );
-  //   for (var i = 0; i < 4; ++i) {
-  //     polygonsColorRender.push(color[0], color[1], color[2]);
-  //   }
-  // }
   gl.bindBuffer(gl.ARRAY_BUFFER, bufferId);
   gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(polygonsRender));
   gl.bindBuffer(gl.ARRAY_BUFFER, cbufferId);
   gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(polygonsColorRender));
-
-  // console.log("aneh lo")
-  // console.log(polygonsRender.length)
-  // console.log(polygonSumVertices)
-  while (tempi < polygonsRender.length) {
-    gl.drawArrays(gl.TRIANGLE_FAN, tempi, polygonSumVertices[tempj]);
-    tempi+=polygonSumVertices[tempj];
-    tempj++;
+  var i = 0;
+  var j = 0;
+  while (i < polygonsRender.length) {
+    gl.drawArrays(gl.TRIANGLE_FAN, i, polygonSumVertices[j]);
+    i += polygonSumVertices[j];
+    j++;
   }
-  // console.log("aneh lo 2")
+
+  if (tempPolygon.length > 1) {
+    var tempColor = [];
+    for (var i = 0; i < tempPolygon.length; ++i) {
+      tempColor.push(color[0], color[1], color[2]);
+    }
+    gl.bindBuffer(gl.ARRAY_BUFFER, bufferId);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(tempPolygon));
+    gl.bindBuffer(gl.ARRAY_BUFFER, cbufferId);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(tempColor));
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, tempPolygon.length);
+  }
 };
 
 //Render all models
 const render = () => {
   gl.clear(gl.COLOR_BUFFER_BIT);
+
   renderLine();
   renderSquare();
   renderPolygon();

@@ -73,6 +73,10 @@ input[type="file"] {
   margin-top: 10px;
 }
 
+.small-text {
+  font: size 10px;
+}
+
 .button {
   background-color: var(--black-color);
   color: var(--white-color);
