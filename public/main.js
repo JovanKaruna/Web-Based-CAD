@@ -273,7 +273,7 @@ const eventListener = () => {
   });
 
   document.getElementById("save").addEventListener("click", () => {
-    save(lines, linesColor, squares, squaresColor/*, polygons, polygonsColor*/);
+    save(lines, linesColor, squares, squaresColor, polygons, polygonsColor);
   });
 
   document.getElementById("load").addEventListener("change", () => {
@@ -294,9 +294,10 @@ const eventListener = () => {
         squares = loadedData[2];
         squaresColor = loadedData[3];
 
-        //Polygon Not tested yet
-        // polygons = loadedData[4];
-        // polygonsColor = loadedData[5];
+        //Polygon
+        polygons = loadedData[4];
+        polygonsColor = loadedData[5];
+        
         render();
       };
       reader.readAsText(selectedFile);

@@ -1,8 +1,15 @@
-export const save = (lines, linesColor, squares, squaresColor/*, polygons, polygonsColor*/) => {
+export const save = (
+  lines,
+  linesColor,
+  squares,
+  squaresColor,
+  polygons,
+  polygonsColor
+) => {
   var data = {
     lines: getAllLinesJSON(lines, linesColor),
     squares: getAllSquaresJSON(squares, squaresColor),
-    // polygons: getAllPolygonsJSON(polygons, polygonsColor),
+    polygons: getAllPolygonsJSON(polygons, polygonsColor),
   };
 
   var jsonData = JSON.stringify(data);
@@ -56,35 +63,26 @@ const getAllSquaresJSON = (squares, squaresColor) => {
   return squareArray;
 };
 
-//Per titik masih belum implemented
-// const getAllPolygonsJSON = (polygons, polygonsColor) => {
-//   var polygonArray = [];
-//   for (var i = 0; i < polygons.length; i++) {
-//     var polygonJSON = {
-//       point1: {
-//         x: polygons[i][0][0],
-//         y: polygons[i][0][1],
-//       },
-//       point2: {
-//         x: squares[i][1][0],
-//         y: squares[i][1][1],
-//       },
-//       point3: {
-//         x: squares[i][2][0],
-//         y: squares[i][2][1],
-//       },
-//       point4: {
-//         x: squares[i][3][0],
-//         y: squares[i][3][1],
-//       },
-//       color_R: polygonsColor[i * 4][0],
-//       color_G: polygonsColor[i * 4][1],
-//       color_B: polygonsColor[i * 4][2],
-//     };
-//     polygonArray.push(polygonJSON);
-//   }
-//   return polygonArray;
-// }
+const getAllPolygonsJSON = (polygons, polygonsColor) => {
+  var polygonArray = [];
+  for (var i = 0; i < polygons.length; i++) {
+    var pointsArray = [];
+    for (var j = 0; j < polygons[i].length; j++) {
+      pointsArray.push({
+        x: polygons[i][j][0],
+        y: polygons[i][j][1],
+      });
+    }
+    var polygonJSON = {
+      points: pointsArray,
+      color_R: polygonsColor[i * polygons[i].length][0],
+      color_G: polygonsColor[i * polygons[i].length][1],
+      color_B: polygonsColor[i * polygons[i].length][2],
+    };
+    polygonArray.push(polygonJSON);
+  }
+  return polygonArray;
+};
 
 const download = (content, fileName, contentType) => {
   var el = document.createElement("a");

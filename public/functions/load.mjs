@@ -1,15 +1,15 @@
 export const load = (data) => {
   var filteredLine = filterLines(data.lines);
   var filteredSquare = filterSquare(data.squares);
-  // var filteredPolygon = filterPolygon(data.polygons)
+  var filteredPolygon = filterPolygon(data.polygons);
 
   return [
     filteredLine[0],
     filteredLine[1],
     filteredSquare[0],
     filteredSquare[1],
-    // filteredPolygon[0],
-    // filteredPolygon[1],
+    filteredPolygon[0],
+    filteredPolygon[1],
   ];
 };
 
@@ -59,14 +59,25 @@ const filterSquare = (dataSquares) => {
   return [squares, squaresColor];
 };
 
-//Implementasi titik polygon belum selesai
-// const filterPolygon = (dataPolygons) => {
-//   var polygons = [];
-//   var polygonsColor = [];
-//   for(var i = 0; i < dataPolygons.length; i++){
-//     // var polygon = 
-
-//   }
-// }
+const filterPolygon = (dataPolygons) => {
+  var polygons = [];
+  var polygonsColor = [];
+  for (var i = 0; i < dataPolygons.length; i++) {
+    var polygon = [];
+    for (var j = 0; j < dataPolygons[i].points.length; j++) {
+      polygon.push([dataPolygons[i].points[j].x, dataPolygons[i].points[j].y]);
+    }
+    var polygonColor = [
+      dataPolygons[i].color_R,
+      dataPolygons[i].color_G,
+      dataPolygons[i].color_B,
+    ];
+    polygons.push(polygon);
+    for (var j = 0; j < polygon.length; j++) {
+      polygonsColor.push(polygonColor);
+    }
+  }
+  return [polygons, polygonsColor];
+};
 
 export default load;
