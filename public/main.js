@@ -1,5 +1,7 @@
 import initShaders from "./shader/initShaders.mjs";
 import { flatten, euclidean } from "./utils/utils.mjs";
+import save from "./functions/save.mjs";
+import load from "./functions/load.mjs";
 
 var canvas;
 var gl;
@@ -14,6 +16,7 @@ var lineEdit = [];
 var tempLineStart = [];
 var tempLineEnd = [];
 
+//SQUARE
 var squares = [];
 var squaresColor = [];
 var squareEdit = [];
@@ -164,8 +167,11 @@ const eventListener = () => {
             }
           } else if (radio[i].value == "square") {
             if (edit) {
-              if(squareEdit.length > 0) {
-                squares[squareEdit[1]] = createSquare(squareEdit[0], [offsetX, offsetY]);
+              if (squareEdit.length > 0) {
+                squares[squareEdit[1]] = createSquare(squareEdit[0], [
+                  offsetX,
+                  offsetY,
+                ]);
               }
             } else {
               tempSquareEnd = [offsetX, offsetY];
@@ -319,6 +325,33 @@ const eventListener = () => {
     render();
   });
 
+  document.getElementById("save").addEventListener("click", () => {
+    save(lines, linesColor, squares, squaresColor);
+  });
+
+  document.getElementById("load").addEventListener("change", () => {
+    const selectedFile = document.getElementById("load").files[0];
+    document.getElementById("load").value = ''; //reset file in load
+    if (selectedFile) {
+      var reader = new FileReader();
+      reader.onload = function () {
+        var fileContent = JSON.parse(reader.result);
+        var loadedData = load(fileContent);
+        clearAll();
+
+        //Line
+        lines = loadedData[0];
+        linesColor = loadedData[1];
+
+        //Square
+        squares = loadedData[2];
+        squaresColor = loadedData[3];
+        render();
+      };
+      reader.readAsText(selectedFile);
+    }
+  });
+
   render();
 };
 
@@ -383,9 +416,9 @@ const getPointSquares = (x, y) => {
     for (let j = 0; j < squares[i].length; j++) {
       if (euclidean(x, y, squares[i][j][0], squares[i][j][1]) < 0.02) {
         if (j > 1) {
-          squareEdit = [squares[i][j-2], i]
+          squareEdit = [squares[i][j - 2], i];
         } else {
-          squareEdit = [squares[i][j+2], i]
+          squareEdit = [squares[i][j + 2], i];
         }
       }
     }

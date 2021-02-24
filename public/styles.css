@@ -51,6 +51,10 @@ input[type="color"] {
   cursor: pointer;
 }
 
+input[type="file"] {
+  display: none;
+}
+
 .canvas-placeholder{
   width: 600;
   height: 600;
@@ -78,7 +82,10 @@ input[type="color"] {
   border-radius: 12px;
   height: 50px;
   width: 25%;  
-  outline:none;
+  outline: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .button:hover {

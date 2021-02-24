@@ -33,7 +33,7 @@
         <div class="userManual">
             <h2>User Manual</h2>
             <ul>
-                <li><strong>Change color</strong> : Klik dan ubah warna pada color pallete.</li>
+                <li><strong>Change color</strong> : Klik dan ubah warna pada color palette.</li>
                 <li><strong>Make model</strong> : Pilih radio button dari model yang ingin dibuat, <strong>jangan</strong> checklist edit, klik mouse pada canvas untuk membuat model yang dipilih.</li>
                 <li><strong>Edit model</strong> : Pilih radio button dari model yang ingin diedit, checklist edit, klik simpul pada sebuah model yang ada pada canvas sesuai dengan pilihan model di radio button untuk melakukan edit (mengubah arah dan ukuran).</li>
                 <li><strong>Clear canvas</strong> : Klik button clear canvas untuk menghapus seluruh gambar yang ada pada canvas.</li>
@@ -63,7 +63,10 @@
     <div class="center">
         <button class="button" id="clear">Clear Canvas</button>
         <button class="button" id="save">Save</button>
-        <button class="button" id="load">Load</button>
+        <label class="button" for="load">
+            Load
+            <input type="file"  id="load" accept="application/JSON" />
+        </label>
     </div>
 </body>
 </html>
