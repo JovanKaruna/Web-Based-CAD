@@ -178,8 +178,9 @@ const eventListener = () => {
             }
           } 
           else if (radio[i].value == "polygon") {
-            mouseClicked = false;
+            // mouseClicked = false;
             tempPolygonEnd = [offsetX, offsetY];
+            console.log("IKEH");
           }
           //   if (polygonEdit.length > 0) {
           //     if (polygonEdit[5] == 1) {
@@ -214,6 +215,7 @@ const eventListener = () => {
 
   canvas.addEventListener("mousedown", (e) => {
     mouseClicked = true;
+    console.log("Mouse Down");
     var offsetX = -1 + (2 * e.offsetX) / canvas.width;
     var offsetY = -1 + (2 * (canvas.height - e.offsetY)) / canvas.height;
     var radio = document.getElementsByTagName("input");
@@ -261,6 +263,7 @@ const eventListener = () => {
     var offsetY = -1 + (2 * (canvas.height - e.offsetY)) / canvas.height;
     var radio = document.getElementsByTagName("input");
     var edit = document.getElementById("edit").checked;
+    console.log(radio)
 
     for (var i = 0; i < radio.length; i++) {
       if (radio[i].type == "radio" && radio[i].checked) {
@@ -271,6 +274,7 @@ const eventListener = () => {
           } else {
             //make model
             lines.push(createLine(tempLineStart, tempLineEnd));
+            console.log(lines)
             for (var i = 0; i < 2; ++i) {
               linesColor.push([color[0], color[1], color[2]]);
             }
@@ -295,10 +299,17 @@ const eventListener = () => {
             } else {
               //make model
               //first point of polygon
+              // console.log("Polygon 1")
               if (polygons.length == 0){
+                // console.log(polygons)
+                // console.log("Polygon 2")
+                // console.log(createPolygon(tempPolygonStart, tempPolygonEnd));
                 polygons.push(createPolygon(tempPolygonStart, tempPolygonEnd));
+                // console.log(polygons)
               }
-              else{
+              else if (polygons.length != 0){
+                // console.log("Polygon 3")
+                // console.log(polygons)
                 polygons[currentPolygonId].push(tempPolygonEnd[0]);
                 polygons[currentPolygonId].push(tempPolygonEnd[1]);
               }
@@ -307,14 +318,13 @@ const eventListener = () => {
               }
               tempPolygonStart = [];
               tempPolygonEnd = [];
-          }
-        }
-        } else {
+            }
+          } else {
             console.log("No Input");
           }
-        }
     render();
-    console.log(`lines: ${lines}`)
+        }
+      }
   });
   
 
@@ -515,7 +525,7 @@ const renderPolygon = () => {
 
   polygons.forEach((polygon) => 
   {
-    polygon.forEach((point) => polygonRender.push(point));
+    polygon.forEach((point) => polygonsRender.push(point));
     polygonSumVertices.push(polygon.length);
   });
 
