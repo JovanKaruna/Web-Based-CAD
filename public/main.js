@@ -192,8 +192,6 @@ const eventListener = () => {
           if (edit) {
             getPointPolygon(offsetX, offsetY);
             if (changeColor) {
-              console.log(polygons[polygonEdit[1]].length)
-              console.log(polygonEdit[3])
               for (var i = 0; i < polygons[polygonEdit[1]].length; i++) {
                 polygonsColor[polygonEdit[3] + i] = [
                   color[0],
@@ -472,7 +470,7 @@ const renderPolygon = () => {
     polygon.forEach((point) => polygonsRender.push(point));
     polygonSumVertices.push(polygon.length);
   });
-  console.log(polygons)
+
   polygonsColor.forEach((colors) => {
     colors.forEach((dec) => {
       polygonsColorRender.push(dec);
@@ -490,7 +488,6 @@ const renderPolygon = () => {
     i += polygonSumVertices[j];
     j++;
   }
-
   if (tempPolygon.length > 1) {
     var tempColor = [];
     for (var i = 0; i < tempPolygon.length; ++i) {
@@ -503,82 +500,6 @@ const renderPolygon = () => {
     gl.drawArrays(gl.TRIANGLE_FAN, 0, tempPolygon.length);
   }
 };
-
-// const renderPolygon = () => {
-//   var polygonsRender = [];
-//   var polygonsColorRender = [];
-//   var polygonSumVertices = [];
-
-//   console.log("In");
-//   polygons.forEach((polygon) => {
-//     var convexPolygon = createConvexHull(polygon, polygon.length);
-//     convexPolygon.forEach((point) => polygonsRender.push(point));
-//     polygonSumVertices.push(convexPolygon.length);
-//     console.log("convexPolygon Length");
-//     console.log(convexPolygon.length);
-//     console.log("convexPolygon");
-//     console.log(convexPolygon);
-//   });
-//   console.log("Out");
-
-//   polygonsColor.forEach((colors) => {
-//     colors.forEach((dec) => {
-//       polygonsColorRender.push(dec);
-//     });
-//   });
-
-//   gl.bindBuffer(gl.ARRAY_BUFFER, bufferId);
-//   gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(polygonsRender));
-//   gl.bindBuffer(gl.ARRAY_BUFFER, cbufferId);
-//   gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(polygonsColorRender));
-//   var i = 0;
-//   var j = 0;
-//   while (i < polygonsRender.length) {
-//     gl.drawArrays(gl.TRIANGLE_FAN, i, polygonSumVertices[j]);
-//     i += polygonSumVertices[j];
-//     j++;
-//   }
-//   console.log(polygons);
-//   console.log(polygonsColor);
-//   if (tempPolygon.length > 1) {
-//     var tempColor = [];
-//     for (var i = 0; i < tempPolygon.length; ++i) {
-//       tempColor.push(color[0], color[1], color[2]);
-//     }
-//     gl.bindBuffer(gl.ARRAY_BUFFER, bufferId);
-//     gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(tempPolygon));
-//     gl.bindBuffer(gl.ARRAY_BUFFER, cbufferId);
-//     gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(tempColor));
-//     gl.drawArrays(gl.TRIANGLE_FAN, 0, tempPolygon.length);
-//   }
-// };
-
-// const createConvexHull = (polygon, sumVertices) => {
-//   let convexHull = [];
-//   for (var i = 0; i < sumVertices; i++) {
-//     for (var j = i+1; j < sumVertices; j++) {
-//         let tempLine = [polygon[i], polygon[j]];
-        
-//         let a = tempLine[1][1] - tempLine[0][1];
-//         let b = tempLine[1][0] - tempLine[0][0];
-//         let c = (tempLine[0][0] * tempLine[1][1]) - (tempLine[0][1] *tempLine[1][0]);
-
-//         let countL = 0;
-//         let countR = 0;
-//         for (var k = 0; k < sumVertices; k++) {
-//             var temps = a * polygon[k][0] - b * polygon[k][1] - c;
-//             if (temps < 0) countL++;
-//             else if (temps > 0) countR++;
-//         }
-        
-//         if (((countL != 0) && (countR == 0)) || ((countL == 0) && (countR != 0)) || ((countL == 0) && (countR == 0))) {
-//             convexHull.push(tempLine);
-//         }
-//     }
-//   }
-//   return convexHull;
-// }
-
 
 //Render all models
 const render = () => {
