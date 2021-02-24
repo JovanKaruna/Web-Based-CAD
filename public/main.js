@@ -167,6 +167,7 @@ const eventListener = () => {
     var offsetY = -1 + (2 * (canvas.height - e.offsetY)) / canvas.height;
     var radio = document.getElementsByTagName("input");
     var edit = document.getElementById("edit").checked;
+    var changeColor = document.getElementById("change-color").checked;
     var message = document.getElementById("message");
 
     for (var i = 0; i < radio.length; i++) {
@@ -190,6 +191,17 @@ const eventListener = () => {
         } else if (radio[i].value == "polygon") {
           if (edit) {
             getPointPolygon(offsetX, offsetY);
+            if (changeColor) {
+              console.log(polygons[polygonEdit[1]].length)
+              console.log(polygonEdit[3])
+              for (var i = 0; i < polygons[polygonEdit[1]].length; i++) {
+                polygonsColor[polygonEdit[3] + i] = [
+                  color[0],
+                  color[1],
+                  color[2],
+                ];
+              }
+            }
           } else {
             if (startMakePolygon) {
               if (
@@ -297,7 +309,7 @@ const eventListener = () => {
         //Polygon
         polygons = loadedData[4];
         polygonsColor = loadedData[5];
-        
+
         render();
       };
       reader.readAsText(selectedFile);
@@ -438,14 +450,16 @@ const renderSquare = () => {
 
 /*** POLYGON ***/
 const getPointPolygon = (x, y) => {
+  var colorStartIdx = 0;
   for (let i = 0; i < polygons.length; i++) {
     for (let j = 0; j < polygons[i].length; j++) {
       if (
         euclidean(x, y, polygons[i][j][0], polygons[i][j][1]) < clickTreshold
       ) {
-        polygonEdit = [polygons[i][j], i, j];
+        polygonEdit = [polygons[i][j], i, j, colorStartIdx];
       }
     }
+    colorStartIdx += polygons[i].length;
   }
 };
 
@@ -476,7 +490,8 @@ const renderPolygon = () => {
     i += polygonSumVertices[j];
     j++;
   }
-
+  console.log(polygons);
+  console.log(polygonsColor);
   if (tempPolygon.length > 1) {
     var tempColor = [];
     for (var i = 0; i < tempPolygon.length; ++i) {

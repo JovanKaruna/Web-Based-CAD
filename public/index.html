@@ -34,8 +34,11 @@
             <h2>User Manual</h2>
             <ul>
                 <li><strong>Change color</strong> : Klik dan ubah warna pada color palette.</li>
-                <li><strong>Make model</strong> : Pilih radio button dari model yang ingin dibuat, <strong>jangan</strong> checklist edit, klik mouse pada canvas untuk membuat model yang dipilih.</li>
-                <li><strong>Edit model</strong> : Pilih radio button dari model yang ingin diedit, checklist edit, klik simpul pada sebuah model yang ada pada canvas sesuai dengan pilihan model di radio button untuk melakukan edit (mengubah arah dan ukuran).</li>
+                <li><strong>Make model</strong> : Pilih radio button dari model yang ingin dibuat, <strong>jangan</strong> checklist edit.
+                    <br>*Untuk line dan square, klik mouse pada canvas lalu drag sambil menahan mouse untuk melihat preview model, kemudian lepas klik mouse untuk membuat model yang dipilih. 
+                    <br>**Untuk polygon klik mouse pada canvas (akan muncul message di bawah canvas), kemudian klik mouse lagi pada canvas untuk menambahkan sebuah titik polygon (polygon akan muncul ketika sudah ada 3 titik yang dibuat), untuk menyelesaikan sebuah poligon harus melakukan klik pada titik terakhir yang sudah dibuat (akan muncul message bahwa telah selesai membuat sebuah poligon).</li>
+                <li><strong>Edit model</strong> : Pilih radio button dari model yang ingin diedit, checklist edit, klik titik pada sebuah model yang ada pada canvas sesuai dengan pilihan model di radio button untuk melakukan edit (click and drag sebuah titik untuk mengubah arah dan ukuran). 
+                    <br>*Untuk polygon dapat mengubah warna dengan melakukan checklist juga terhadap change color dan melakukan klik pada salah satu titik di model polygon yang ingin diubah warnanya (jangan lupa agar radio button memilih polygon dan melakukan checklist edit).</li>
                 <li><strong>Clear canvas</strong> : Klik button clear canvas untuk menghapus seluruh gambar yang ada pada canvas.</li>
                 <li><strong>Save canvas</strong> : Klik button save untuk menyimpan canvas pada sebuah file download.</li>
                 <li><strong>Load canvas</strong> : Klik button load untuk menampilkan canvas yang pernah di save.</li>
@@ -54,6 +57,10 @@
             <div>
                 <input type="checkbox" id="edit">
                 <label for="edit">Edit</label>
+            </div>
+            <div>
+                <input type="checkbox" id="change-color">
+                <label for="change-color">Change color polygon</label>
             </div>
         </div>
     </div>
