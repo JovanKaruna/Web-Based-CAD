@@ -1,12 +1,15 @@
 export const load = (data) => {
   var filteredLine = filterLines(data.lines);
   var filteredSquare = filterSquare(data.squares);
+  // var filteredPolygon = filterPolygon(data.polygons)
 
   return [
     filteredLine[0],
     filteredLine[1],
     filteredSquare[0],
     filteredSquare[1],
+    // filteredPolygon[0],
+    // filteredPolygon[1],
   ];
 };
 
@@ -55,5 +58,15 @@ const filterSquare = (dataSquares) => {
   }
   return [squares, squaresColor];
 };
+
+//Implementasi titik polygon belum selesai
+// const filterPolygon = (dataPolygons) => {
+//   var polygons = [];
+//   var polygonsColor = [];
+//   for(var i = 0; i < dataPolygons.length; i++){
+//     // var polygon = 
+
+//   }
+// }
 
 export default load;
