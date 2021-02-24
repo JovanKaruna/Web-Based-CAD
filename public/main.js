@@ -300,7 +300,7 @@ const eventListener = () => {
               //make model
               //first point of polygon
               // console.log("Polygon 1")
-              if (polygons.length == 0){
+              if (polygons.length == 0 || (polygons.length == currentPolygonId)){
                 // console.log(polygons)
                 // console.log("Polygon 2")
                 // console.log(createPolygon(tempPolygonStart, tempPolygonEnd));
@@ -415,7 +415,7 @@ const renderLine = () => {
   gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(linesRender));
   gl.bindBuffer(gl.ARRAY_BUFFER, cbufferId);
   gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(linesColorRender));
-  console.log(linesColorRender.length)
+  // console.log(linesColorRender.length)
   for (var i = 0; i < linesRender.length / 4; i++) {
     gl.drawArrays(gl.LINES, 2 * i, 2);
   }
