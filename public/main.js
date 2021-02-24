@@ -16,6 +16,7 @@ var lineEdit = [];
 var tempLineStart = [];
 var tempLineEnd = [];
 
+//SQUARE
 var squares = [];
 var squaresColor = [];
 var squareEdit = [];
@@ -242,11 +243,13 @@ const eventListener = () => {
 
   document.getElementById("load").addEventListener("change", () => {
     const selectedFile = document.getElementById("load").files[0];
+    document.getElementById("load").value = ''; //reset file in load
     if (selectedFile) {
       var reader = new FileReader();
       reader.onload = function () {
         var fileContent = JSON.parse(reader.result);
         var loadedData = load(fileContent);
+        clearAll();
 
         //Line
         lines = loadedData[0];
@@ -255,7 +258,6 @@ const eventListener = () => {
         //Square
         squares = loadedData[2];
         squaresColor = loadedData[3];
-
         render();
       };
       reader.readAsText(selectedFile);
