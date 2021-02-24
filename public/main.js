@@ -20,8 +20,15 @@ var squareEdit = [];
 var tempSquareStart = [];
 var tempSquareEnd = [];
 
+var polygons = [];
+var polygonsColor = [];
+var polygonEdit = [];
+var tempPolygonStart = [];
+var tempPolygonEnd = [];
+
 var bufferId;
 var cbufferId;
+var currentPolygonId = 0;
 
 const maxPoints = 200000;
 
@@ -73,6 +80,12 @@ const clearAll = () => {
   squareEdit = [];
   tempSquareStart = [];
   tempSquareEnd = [];
+
+  polygons = [];
+  polygonsColor = [];
+  polygonEdit = [];
+  tempPolygonStart = [];
+  tempPolygonEnd = [];
 };
 
 //Function to change color
@@ -90,8 +103,28 @@ const changeColor = () => {
 
 //All Event listener
 const eventListener = () => {
+  canvas.addEventListener("dblclick", (e) => {
+    console.log("Double Click");
+    
+    var offsetX = -1 + (2 * e.offsetX) / canvas.width;
+    var offsetY = -1 + (2 * (canvas.height - e.offsetY)) / canvas.height;
+    var radio = document.getElementsByTagName("input");
+    var edit = document.getElementById("edit").checked;
+
+    for (var i = 0; i < radio.length; i++) {
+      if (radio[i].type == "radio" && radio[i].checked) {
+        if (radio[i].value == "polygon") {
+            polygons[currentPolygonId].push(offsetX);
+            polygons[currentPolygonId].push(offsetY);
+            currentPolygonId++;
+          }
+        }
+      }
+    });
+
   canvas.addEventListener("mousemove", (e) => {
     if (mouseClicked == true) {
+      console.log("Moved");
       var offsetX = -1 + (2 * e.offsetX) / canvas.width;
       var offsetY = -1 + (2 * (canvas.height - e.offsetY)) / canvas.height;
       var radio = document.getElementsByTagName("input");
@@ -105,21 +138,29 @@ const eventListener = () => {
               if (lineEdit.length > 0) {
                 if (lineEdit[5] == 1) {
                   //x1 and y1 changed
+                  console.log(`lineEdit: ${lineEdit}`)
                   lines[lineEdit[4]] = createLine(
                     [offsetX, offsetY],
                     [lineEdit[2], lineEdit[3]]
                   );
+                  console.log(`lines: ${lines}`)
                 } else if (lineEdit[5] == 2) {
                   //x2 and y2 change
+                  console.log(`lineEdit: ${lineEdit}`)
                   lines[lineEdit[4]] = createLine(
                     [lineEdit[0], lineEdit[1]],
                     [offsetX, offsetY]
                   );
+                  console.log(`lines: ${lines}`)
                 }
               }
             } else {
               //make model
+              console.log(`lineEdit: ${lineEdit}`)
               tempLineEnd = [offsetX, offsetY];
+              console.log(`tempLineEnd: ${tempLineStart}`)
+              console.log(`tempLineStart: ${tempLineEnd}`)
+              
             }
           } else if (radio[i].value == "square") {
             if (edit) {
@@ -129,13 +170,36 @@ const eventListener = () => {
             } else {
               tempSquareEnd = [offsetX, offsetY];
             }
-          } else if (radio[i].value == "polygon") {
-            if (edit) {
-              console.log("edit");
-            } else {
-              console.log("polygon");
-            }
+          } 
+          else if (radio[i].value == "polygon") {
+            mouseClicked = false;
+            tempPolygonEnd = [offsetX, offsetY];
           }
+          //   if (polygonEdit.length > 0) {
+          //     if (polygonEdit[5] == 1) {
+          //       //x1 and y1 changed
+          //       console.log(`polygonEdit: ${lineEdit}`)
+          //       polygons[polygonEdit[4]] = createLine(
+          //         [offsetX, offsetY],
+          //         [polygonEdit[2], polygonEdit[3]]
+          //       );
+          //     } else if (polygonEdit[5] == 2) {
+          //       //x2 and y2 change
+          //       console.log(`polygonEdit: ${lineEdit}`)
+          //       polygons[polygonEdit[4]] = createLine(
+          //         [polygonEdit[0], polygonEdit[1]],
+          //         [offsetX, offsetY]
+          //       );
+          //     }
+          //   }
+          // } else {
+          //   //make model
+          //   console.log(`polygonEdit: ${polygonEdit}`)
+          //   tempPolygonEnd = [offsetX, offsetY];
+          //   console.log(`tempPolygonEnd: ${tempPolygonStart}`)
+          //   console.log(`tempPolygonStart: ${tempPolygonEnd}`)
+            
+          // }
         }
       }
       render();
@@ -169,9 +233,14 @@ const eventListener = () => {
           }
         } else if (radio[i].value == "polygon") {
           if (edit) {
-            console.log("edit");
+            // getPointPolygon(offsetX, offsetY);
+            console.log("polygon")
           } else {
-            console.log("polygon");
+            tempPolygonStart = [offsetX, offsetY];
+            tempPolygonEnd = [offsetX, offsetY];
+            console.log("masuk sini")
+            console.log(`Start: ${tempPolygonStart}`)
+            console.log(`End: ${tempPolygonEnd}`)
           }
         }
       }
@@ -180,6 +249,7 @@ const eventListener = () => {
   });
 
   canvas.addEventListener("mouseup", (e) => {
+    console.log("Mouse Up")
     mouseClicked = false;
     var offsetX = -1 + (2 * e.offsetX) / canvas.width;
     var offsetY = -1 + (2 * (canvas.height - e.offsetY)) / canvas.height;
@@ -213,16 +283,34 @@ const eventListener = () => {
             tempSquareEnd = [];
           }
         } else if (radio[i].value == "polygon") {
-          if (edit) {
-            console.log("edit");
-          } else {
-            console.log("polygon");
+            if (edit) {
+              // editting model
+              polygonEdit = [];
+            } else {
+              //make model
+              //first point of polygon
+              if (polygons.length == 0){
+                polygons.push(createPolygon(tempPolygonStart, tempPolygonEnd));
+              }
+              else{
+                polygons[currentPolygonId].push(tempPolygonEnd[0]);
+                polygons[currentPolygonId].push(tempPolygonEnd[1]);
+              }
+              for (var i = 0; i < 2; ++i) {
+                polygonsColor.push([color[0], color[1], color[2]]);
+              }
+              tempPolygonStart = [];
+              tempPolygonEnd = [];
           }
         }
-      }
-    }
+        } else {
+            console.log("No Input");
+          }
+        }
     render();
+    console.log(`lines: ${lines}`)
   });
+  
 
   changeColor();
 
@@ -363,12 +451,75 @@ const renderSquare = () => {
   }
 };
 
+/*** POLYGON ***/
+// const getPointPolygon = (x, y) => {
+//   for (let i = 0; i < polygons.length; i++) {
+//     for (let j = 0; j < polygons[i].length; j++) {
+//       if (euclidean(x, y, polygons[i][j], polygons[i][j + 1]) < 0.02) {
+//         var x1 = polygons[i][0];
+//         var y1 = polygons[i][1];
+//         var x2 = polygons[i][2];
+//         var y2 = polygons[i][3];
+
+//         // if (j < 2) {
+//         //   polygonEdit = [x1, y1, x2, y2, i, 1];
+//         // } else {
+//         //   polygonEdit = [x1, y1, x2, y2, i, 2];
+//         // }
+//       }
+//     }
+//   }
+// };
+
+const createPolygon = (start, end) => {
+  return [start[0], start[1], end[0], end[1]];
+};
+
+const renderPolygon = () => {
+  var polygonsRender = [];
+  var polygonsColorRender = [];
+  var polygonSumVertices = [];
+
+  polygons.forEach((polygon) => 
+  {
+    polygon.forEach((point) => polygonRender.push(point));
+    polygonSumVertices.push(polygon.length);
+  });
+
+  polygonsColor.forEach((colors) => {
+    colors.forEach((dec) => {
+      polygonsColorRender.push(dec);
+    });
+  });
+
+  // if (tempPolygonEnd.length != 0) {
+  //   createPolygon(tempPolygonStart, tempPolygonEnd).forEach((point) =>
+  //     polygonsRender.push(point)
+  //   );
+  //   for (var i = 0; i < 4; ++i) {
+  //     polygonsColorRender.push(color[0], color[1], color[2]);
+  //   }
+  // }
+  gl.bindBuffer(gl.ARRAY_BUFFER, bufferId);
+  gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(polygonsRender));
+  gl.bindBuffer(gl.ARRAY_BUFFER, cbufferId);
+  gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(polygonsColorRender));
+  var i = 0;
+  var j = 0;
+  while (i < polygonsRender.length) {
+    j++;
+    gl.drawArrays(gl.TRIANGLE_FAN, i, polygonSumVertices[j]);
+    i+=polygonSumVertices[j];
+  }
+};
+
 //Render all models
 const render = () => {
   gl.clear(gl.COLOR_BUFFER_BIT);
 
   renderLine();
   renderSquare();
+  renderPolygon();
 };
 
 window.onload = init;
