@@ -549,11 +549,14 @@ const renderPolygon = () => {
   gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(polygonsColorRender));
   var i = 0;
   var j = 0;
+  console.log("aneh lo")
+  console.log(polygonsRender.length)
   while (i < polygonsRender.length) {
     j++;
     gl.drawArrays(gl.TRIANGLE_FAN, i, polygonSumVertices[j]);
     i+=polygonSumVertices[j];
   }
+  console.log("aneh lo 2")
 };
 
 //Render all models
