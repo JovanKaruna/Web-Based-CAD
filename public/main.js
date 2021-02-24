@@ -308,14 +308,14 @@ const eventListener = () => {
                 // console.log(polygons)
               }
               else if (polygons.length != 0){
-                // console.log("Polygon 3")
+                console.log("Polygon 3")
                 // console.log(polygons)
                 polygons[currentPolygonId].push(tempPolygonEnd[0]);
                 polygons[currentPolygonId].push(tempPolygonEnd[1]);
               }
-              for (var i = 0; i < 2; ++i) {
-                polygonsColor.push([color[0], color[1], color[2]]);
-              }
+              // for (var i = 0; i <  polygonSumVertices[]; ++i) {
+              //   polygonsColor.push([color[0], color[1], color[2]]);
+              // }
               tempPolygonStart = [];
               tempPolygonEnd = [];
             }
@@ -415,6 +415,7 @@ const renderLine = () => {
   gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(linesRender));
   gl.bindBuffer(gl.ARRAY_BUFFER, cbufferId);
   gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(linesColorRender));
+  console.log(linesColorRender.length)
   for (var i = 0; i < linesRender.length / 4; i++) {
     gl.drawArrays(gl.LINES, 2 * i, 2);
   }
@@ -489,6 +490,7 @@ const renderSquare = () => {
   gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(squaresRender));
   gl.bindBuffer(gl.ARRAY_BUFFER, cbufferId);
   gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(squaresColorRender));
+  
   for (var i = 0; i < squaresRender.length / 4; i++) {
     gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
   }
@@ -522,6 +524,9 @@ const renderPolygon = () => {
   var polygonsRender = [];
   var polygonsColorRender = [];
   var polygonSumVertices = [];
+  var tempi = 0;
+  var tempj = 0;
+  var polygonsColor = [];
 
   polygons.forEach((polygon) => 
   {
@@ -529,11 +534,20 @@ const renderPolygon = () => {
     polygonSumVertices.push(polygon.length);
   });
 
+
+  polygonSumVertices.forEach((sum) => 
+  {
+    for (var i = 0; i < sum; ++i) {
+        polygonsColor.push([color[0], color[1], color[2]]);
+    }
+  });
+
   polygonsColor.forEach((colors) => {
     colors.forEach((dec) => {
       polygonsColorRender.push(dec);
     });
   });
+
 
   // if (tempPolygonEnd.length != 0) {
   //   createPolygon(tempPolygonStart, tempPolygonEnd).forEach((point) =>
@@ -547,22 +561,21 @@ const renderPolygon = () => {
   gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(polygonsRender));
   gl.bindBuffer(gl.ARRAY_BUFFER, cbufferId);
   gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(polygonsColorRender));
-  var i = 0;
-  var j = 0;
-  console.log("aneh lo")
-  console.log(polygonsRender.length)
-  while (i < polygonsRender.length) {
-    j++;
-    gl.drawArrays(gl.TRIANGLE_FAN, i, polygonSumVertices[j]);
-    i+=polygonSumVertices[j];
+
+  // console.log("aneh lo")
+  // console.log(polygonsRender.length)
+  // console.log(polygonSumVertices)
+  while (tempi < polygonsRender.length) {
+    gl.drawArrays(gl.TRIANGLE_FAN, tempi, polygonSumVertices[tempj]);
+    tempi+=polygonSumVertices[tempj];
+    tempj++;
   }
-  console.log("aneh lo 2")
+  // console.log("aneh lo 2")
 };
 
 //Render all models
 const render = () => {
   gl.clear(gl.COLOR_BUFFER_BIT);
-
   renderLine();
   renderSquare();
   renderPolygon();
